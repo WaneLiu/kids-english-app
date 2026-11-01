@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>小朋友学英语 - 水果和动物</title>
+<title>小朋友学英语 - 水果、动物和家人</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; overflow: hidden; font-family: "Comic Sans MS", "Microsoft YaHei", sans-serif; }
@@ -59,6 +59,7 @@
   .category-card:active { transform: scale(0.92); }
   .category-card.fruit { border-color: #ff9a9e; }
   .category-card.animal { border-color: #a8edea; }
+  .category-card.family { border-color: #c3aed6; }
   .category-card .emoji {
     font-size: clamp(60px, 15vw, 90px);
     line-height: 1; margin-bottom: 10px;
@@ -69,6 +70,7 @@
   }
   .category-card.fruit .label { color: #ff6b6b; }
   .category-card.animal .label { color: #4ecdc4; }
+  .category-card.family .label { color: #9b59b6; }
 
   /* ===== 学习页 ===== */
   .top-bar {
@@ -249,6 +251,10 @@
       <div class="emoji">🐶</div>
       <div class="label">动物 Animals</div>
     </div>
+    <div class="category-card family" onclick="startLearn('family')">
+      <div class="emoji">👪</div>
+      <div class="label">家人 Family</div>
+    </div>
   </div>
   <button class="big-btn" style="margin-top:40px" onclick="startQuiz()">🎮 找一找</button>
 </div>
@@ -301,6 +307,12 @@ const FRUITS = [
   { emoji: '🍌', word: 'Banana', meaning: '香蕉', phrase: 'I eat banana.' },
   { emoji: '🍊', word: 'Orange', meaning: '橙子', phrase: 'I see orange.' },
   { emoji: '🍐', word: 'Pear', meaning: '梨', phrase: 'I see pear.' },
+  { emoji: '🍇', word: 'Grape', meaning: '葡萄', phrase: 'I eat grapes.' },
+  { emoji: '🍑', word: 'Peach', meaning: '桃子', phrase: 'I eat peach.' },
+  { emoji: '🍉', word: 'Watermelon', meaning: '西瓜', phrase: 'I eat watermelon.' },
+  { emoji: '🍓', word: 'Strawberry', meaning: '草莓', phrase: 'I eat strawberry.' },
+  { emoji: '🥭', word: 'Mango', meaning: '芒果', phrase: 'I eat mango.' },
+  { emoji: '🍒', word: 'Cherry', meaning: '樱桃', phrase: 'I eat cherries.' },
 ];
 
 const ANIMALS = [
@@ -308,6 +320,25 @@ const ANIMALS = [
   { emoji: '🐱', word: 'Cat', meaning: '猫', phrase: 'Cat says meow.', sound: 'meow' },
   { emoji: '🐮', word: 'Cow', meaning: '牛', phrase: 'Cow says moo.', sound: 'moo' },
   { emoji: '🦆', word: 'Duck', meaning: '鸭子', phrase: 'Duck says quack.', sound: 'quack quack' },
+  { emoji: '🐷', word: 'Pig', meaning: '猪', phrase: 'Pig says oink.', sound: 'oink oink' },
+  { emoji: '🐰', word: 'Rabbit', meaning: '兔子', phrase: 'Rabbit can hop.' },
+  { emoji: '🐦', word: 'Bird', meaning: '鸟', phrase: 'Bird says tweet.', sound: 'tweet tweet' },
+  { emoji: '🐟', word: 'Fish', meaning: '鱼', phrase: 'Fish can swim.' },
+  { emoji: '🐻', word: 'Bear', meaning: '熊', phrase: 'Bear is big.' },
+  { emoji: '🐴', word: 'Horse', meaning: '马', phrase: 'Horse says neigh.', sound: 'neigh' },
+];
+
+const FAMILY = [
+  { emoji: '👩', word: 'Mom', meaning: '妈妈', phrase: 'Mommy loves you.' },
+  { emoji: '👨', word: 'Dad', meaning: '爸爸', phrase: 'Daddy loves you.' },
+  { emoji: '👵', word: 'Grandma', meaning: '奶奶', phrase: 'Grandma is kind.' },
+  { emoji: '👴', word: 'Grandpa', meaning: '爷爷', phrase: 'Grandpa is fun.' },
+  { emoji: '👦', word: 'Brother', meaning: '哥哥/弟弟', phrase: 'I love my brother.' },
+  { emoji: '👧', word: 'Sister', meaning: '姐姐/妹妹', phrase: 'I love my sister.' },
+  { emoji: '👶', word: 'Baby', meaning: '宝宝', phrase: 'The baby is cute.' },
+  { emoji: '🧔', word: 'Uncle', meaning: '叔叔', phrase: 'My uncle is tall.' },
+  { emoji: '👩‍🦰', word: 'Aunt', meaning: '阿姨', phrase: 'My aunt is nice.' },
+  { emoji: '👪', word: 'Family', meaning: '家人', phrase: 'I love my family.' },
 ];
 
 let currentCategory = [];
@@ -436,7 +467,9 @@ function scheduleAuto() {
 
 // ===== 学习模式 =====
 function startLearn(type) {
-  currentCategory = (type === 'fruit') ? FRUITS : ANIMALS;
+  if (type === 'fruit') currentCategory = FRUITS;
+  else if (type === 'animal') currentCategory = ANIMALS;
+  else currentCategory = FAMILY;
   currentIndex = 0;
   renderCard();
   showScreen('learn');
@@ -486,7 +519,7 @@ function nextCard() {
 
 // ===== 测试模式（简化版：3题、2选项、语音念题）=====
 function startQuiz() {
-  const all = [...FRUITS, ...ANIMALS];
+  const all = [...FRUITS, ...ANIMALS, ...FAMILY];
   quizItems = shuffle(all).slice(0, 3);
   quizIndex = 0;
   quizScore = 0;
@@ -512,7 +545,7 @@ function renderQuiz() {
   document.getElementById('feedback').className = 'feedback';
 
   // 只有 2 个选项，降低难度
-  const all = [...FRUITS, ...ANIMALS];
+  const all = [...FRUITS, ...ANIMALS, ...FAMILY];
   const distractors = shuffle(all.filter(x => x.word !== item.word)).slice(0, 1);
   const options = shuffle([item, ...distractors]);
 
